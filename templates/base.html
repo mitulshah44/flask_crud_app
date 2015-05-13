@@ -1,0 +1,30 @@
+<html>
+  <head>
+    {% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+    <title>{% block title %}{% endblock %} - My Webpage</title>
+    {% endblock %}
+  </head>
+  <body>
+  <div class="col-md-3">
+    <h2>Menu</h2>
+    <ul>
+
+      {% if session['username'] %}
+      <li style="list-style-type: none;"> Welcome <h4 style="display:inline-block;">{{ session['username'] }}</h4></li>
+      <li><a href="{{url_for('logout')}}">logout</a></li>
+      {% else %}
+       <li><a href="{{url_for('login')}}">login</a></li>
+       {% endif %}
+    </ul>
+  </div>
+    <div class="col-md-9">
+      <div id="content">{% block content %}{% endblock %}</div>
+     <!--  <div id="footer" style="text-align:center; margin-top:35px;">
+        {% block footer %}
+        &copy; Copyright 2015
+        {% endblock %}
+      </div> -->
+   </div>
+  </body>
+</html>

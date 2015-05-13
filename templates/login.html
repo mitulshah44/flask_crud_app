@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+ {% block title %} {{ data.title }}{% endblock %}
+{% block content %}
+<div class="col-md-7">
+  <form class="form-signin" method="post" action="/login">
+    <h2 class="form-signin-heading">Login Page</h2>
+    <label for="inputEmail" class="sr-only">Email address</label>
+     
+    <input type="text" class="form-control" placeholder="Username" value="{{ request.form.username }}" name="username" required autofocus>
+    <br/>
+    <input type="text" class="form-control" placeholder="Email address" value="{{ request.form.email }}"  name="email" required autofocus>
+     
+    <br/><button class="btn btn-lg btn-primary btn-block col-md-3" type="submit">Login !! </button>
+  </form>
+ </div>
+ <br/>
+ <div class="clearfix"></div>
+
+<div class="col-md-7"> 
+    {% if error %}
+      <div class="alert alert-success">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>{{ error }}</strong>
+      </div>
+    {% endif %} 
+</div>
+
+{% endblock %} 
