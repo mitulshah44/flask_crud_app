@@ -2,79 +2,19 @@
 from json import *
 from functools import wraps
 import sqlite3
-import os
 
 # import flask module
-from flask import (Flask, views, render_template,
+from flask import (views, render_template,
                    request, flash, redirect, url_for, session,
                    g)
-from flask.ext.sqlalchemy import SQLAlchemy
+
 from sqlalchemy.exc import IntegrityError
 
 # import project modules
+from config import db, app
 from models import *
 
-app = Flask(__name__)
-
-# debug mode is enable or disable
-app.debug = True
-app.secret_key = 'aQRaFWWWaAa!#$43$aa!!!AsSSQ'
-
-# create database connection for sqlite3
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-db_path = os.path.join(BASE_DIR, "sample.db")
-app.database = db_path
-
-# create connection for sqlachemy
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///userdata.db'
-
-# connect with mysql
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/flaskdb'
-
-# create sqlalchemy object
-db = SQLAlchemy(app)
-
 data = {}
-
-
-class Viewpage(views.MethodView):
-    """
-    """
-    def get(self):
-        data['title'] = "Subscription"
-        # g.db = connect_db()
-        # cur = g.db.execute('select * from userdata')
-        # usrdata = [dict(username=row[0], email=row[1])
-        #            for row in cur.fetchall()]
-        # g.db.close()
-        usrdata = db.session.query(User).all()
-
-        return render_template('index.html', data=data, userdata=usrdata)
-
-    def post(self):
-        data['title'] = "Subscription"
-        data['message'] = "POST Method is called."
-        data['content'] = email = request.form['expression']
-        uname = session['username']
-
-        # insert email into database
-        try:
-            db.session.add(User(uname, email))
-            db.session.commit()
-            message = data['content'] + " has been added."
-            flash(message)
-        except IntegrityError as e:
-            db.session.rollback()
-            flash(str(e.message))
-            pass
-
-        # fetch data from userdata table
-        usrdata = db.session.query(User).all()
-
-        return render_template('index.html', data=data, userdata=usrdata)
-
-app.add_url_rule('/', view_func=Viewpage.as_view('main'),
-                 methods=['GET', 'POST'])
 
 
 def login_required(f):
@@ -118,15 +58,37 @@ def login():
 # @app.route('/user/', defaults={'userid': 1})
 @app.route('/user/<int:userid>')
 def show_user(userid):
-    pass
-    # user = User.query.filter_by(userid=userid).first_or_404()
-    # return render_template('show_user.html', user=user)
+    """
+    to view user information
+    """
+    data['title'] = 'Edit User'
+    user = User.query.filter_by(id=userid).first_or_404()
+    # user = User.query.all()
+    jsondata = {'id': user.id, 'username': user.username,
+                'email': user.email}
+    print jsondata
+    return render_template('show_user.html', user=jsondata, data=data)
+
+
+@app.route('/updateinfo', methods=['POST'])
+def updateInfo():
+    """
+    to update information
+    """
+    email = request.form['email']
+    uname = request.form['username']
+    uid = request.form['id']
+    User.query.filter_by(id=uid).update(dict(email=email,
+                                             username=uname))
+    db.session.commit()
+    return redirect(url_for('homepage'))
 
 
 @app.route("/delete/user/<int:userid>")
 def deleteUser(userid):
-    # u = User.query.filter(id == userid).all().delete()
-    # u = User.query.filter(User.id == userid).first()
+    """
+    Used function to delete user permanently
+    """
     user = User.query.get(userid)
     db.session.remove()
     db.session.delete(user)
@@ -146,9 +108,10 @@ def deleteUser(userid):
 def logout():
 
     session.clear()
-    # session.pop('logged_in', None)
-    # session.pop('username', None)
-    # session.pop('email', None)
+    session.pop('logged_in', None)
+    session.pop('username', None)
+    session.pop('email', None)
+    session.pop('id', None)
     return redirect(url_for('login'))
 
 
@@ -156,13 +119,58 @@ def logout():
 @login_required
 def homepage():
     data['title'] = 'Subscription'
-    g.db = connect_db()
-    cur = g.db.execute('select * from userdata')
-    usrdata = [dict(username=row[0], email=row[1]) for row in cur.fetchall()]
-    g.db.close()
+    # fetch data usinf raw query
+    # g.db = connect_db()
+    # cur = g.db.execute('select * from userdata')
+    # usrdata = [dict(username=row[0], email=row[1]) for row in cur.fetchall()]
+    # g.db.close()
 
+    # fetching data using sqlachemy
+    usrdata = User.query.all()
     return render_template('index.html', data=data, userdata=usrdata)
 
+
+class Viewpage(views.MethodView):
+    """
+    Viewpage class is easy to access where 
+    we can defind get post put method
+    using class method 
+    """
+    def get(self):
+        data['title'] = "Subscription"
+        # g.db = connect_db()
+        # cur = g.db.execute('select * from userdata')
+        # usrdata = [dict(username=row[0], email=row[1])
+        #            for row in cur.fetchall()]
+        # g.db.close()
+        usrdata = db.session.query(User).all()
+
+        return render_template('index.html', data=data, userdata=usrdata)
+
+    def post(self):
+        data['title'] = "Subscription"
+        data['message'] = "POST Method is called."
+        data['content'] = email = request.form['expression']
+        uname = session['username']
+
+        # insert email into database
+        try:
+            db.session.add(User(uname, email))
+            db.session.commit()
+            message = data['content'] + " has been added."
+            flash(message)
+        except IntegrityError as e:
+            db.session.rollback()
+            flash(str(e.message))
+            pass
+
+        # fetch data from userdata table
+        usrdata = db.session.query(User).all()
+
+        return render_template('index.html', data=data, userdata=usrdata)
+
+app.add_url_rule('/', view_func=Viewpage.as_view('main'),
+                 methods=['GET', 'POST'])
 
 # connection with sqlite3
 def connect_db():
