@@ -6,10 +6,10 @@
     <h2 class="form-signin-heading">Login Page</h2>
     <label for="inputEmail" class="sr-only">Email address</label>
      
-    <input type="text" class="form-control" placeholder="Username" value="{{ request.form.username }}" name="username" required autofocus>
-    <br/>
-    <input type="text" class="form-control" placeholder="Email address" value="{{ request.form.email }}"  name="email" required autofocus>
-     
+   
+    <input type="text" class="form-control" placeholder="Email address" value="{{ request.form.email }}"  name="email" required autofocus><br/>
+      <input type="text" class="form-control" placeholder="Password" value="{{ request.form.password }}" name="password" required autofocus>
+    
     <br/><button class="btn btn-lg btn-primary btn-block col-md-3" type="submit">Login !! </button>
   </form>
  </div>

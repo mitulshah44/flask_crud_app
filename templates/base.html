@@ -12,6 +12,8 @@
 
       {% if session['username'] %}
       <li style="list-style-type: none;"> Welcome <h4 style="display:inline-block;">{{ session['username'] }}</h4></li>
+      <li><a href="{{ url_for('homepage')}}">Add Favourite Book</a></li>
+      <li><a href="{{ url_for('main')}}">Show Member</a> </li>
       <li><a href="{{url_for('logout')}}">logout</a></li>
       {% else %}
        <li><a href="{{url_for('login')}}">login</a></li>

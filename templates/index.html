@@ -2,16 +2,20 @@
  {% block title %} {{ data.title }}{% endblock %}
 {% block content %}
 <div class="col-md-7">
-  <form class="form-signin" method="post" action="/">
-    <h2 class="form-signin-heading">Please enter your email to subscribe</h2>
+  <form class="form-signin" method="post" action="{{ url_for('addBook') }}">
+    <h2 class="form-signin-heading">Add your favorite Book into list</h2>
     <label for="inputEmail" class="sr-only">Email address</label>
     <!-- {{ session['id'] }} -->
+    Registered email : <strong>
     {% if 'content' in data %}
-    <input type="email" id="inputEmail" value="{{data.content}}" class="form-control" placeholder="Email address" name="expression" required autofocus>
+      {{data.content}}
      {% else %}
-     <input type="email" id="inputEmail" value="{{ session['email'] }}"  class="form-control" placeholder="Email address" name="expression" required autofocus>
-     {% endif %}
-    <br/><button class="btn btn-lg btn-primary btn-block col-md-3" type="submit">Subscribe Email</button>
+     {{ session['email'] }}
+     {% endif %}</strong>
+     <br/><br/>
+     <input type='text'  class="form-control" placeholder="Book Name" value="" name="book">
+    <br/>
+    <button class="btn btn-lg btn-primary btn-block col-md-3" type="submit">Add Book</button>
   </form>
  </div>
  <br/>
@@ -41,11 +45,11 @@
       </tr>
     </thead>
     <tbody> 
-    {% for udata in userdata %}
+    {% for bdata in bookdata %}
       <tr>
-        <td>{{ udata.username }}</td>
-        <td>{{ udata.email }}</td>
-        <td> <a href="{{url_for('show_user', userid=udata.id)}}">Edit</a> | <a href="{{url_for('deleteUser', userid=udata.id)}}">Delete</a></td>
+        <td>{{ bdata.userid }}</td>
+        <td>{{ bdata.bookname }}</td>
+        <td> <a href="{{url_for('show_user', userid=bdata.id)}}">Edit</a> | <a href="{{url_for('deleteUser', userid=bdata.id)}}">Delete</a></td> 
       </tr>
       {% endfor %} 
     </tbody>

@@ -3,13 +3,13 @@
 	
 	<div class="col-md-7">
 	  <form class="form-signin" method="post" action="{{ url_for('updateInfo') }}">
-	  <h3>Update Information</h3>
+	  <h3>Update Profile</h3>
 	  <br/>
 	  	<input type="hidden" name="id" value="{{ user['id']|safe }}">
 	    <label for="inputEmail" class="sr-only">Username</label>
-	    <input type='text'  class="form-control"  value="{{user['username']|safe }}" name="username">
+	    <input type='text'  class="form-control" placeholder="username" value="{{user['username']|safe }}" name="username">
 	    <br/>
-	    <input  class="form-control"  type="email" value="{{ user.email|safe }}" name="email">
+	    <input  class="form-control"  type="email" placeholder="email" value="{{ user.email|safe }}" name="email">
 	    <br/><button class="btn btn-lg btn-primary btn-block col-md-3" type="submit">Update </button>
 	  </form>
  	</div>
